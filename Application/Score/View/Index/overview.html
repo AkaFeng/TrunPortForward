@@ -1,0 +1,116 @@
+<extend name="Public:base" />
+<block name="body_content">
+    <div class="app app-header-fixed <if condition='$Think.config.page-boxed eq 1'>container</if>">
+        <!-- header -->
+        <include file="Public:header" />
+        <!-- /header -->
+
+        <!-- aside -->
+        <include file="Public:sidebar" />
+        <!-- /aside -->
+
+        <!-- content -->
+        <div id="content" class="app-content" role="main">
+            <div class="app-content-body ">
+
+                <div class="hbox hbox-auto-xs hbox-auto-sm">
+                    <!-- main -->
+                    <div class="col">
+                        <!-- main header -->
+                        <div class="bg-light lter b-b wrapper-md">
+                            <div class="row">
+                                <div class="col-sm-6 col-xs-12">
+                                    <h1 class="m-n font-thin h3 text-black"><?php if (trim($user_info['stu_name']) == ''){ ?>{$user_info.uname}<?php }else{ ?>{$user_info.stu_name}<?php }?>，欢迎你来到长郡查分2.0</h1>
+                                    <small class="text-muted">跨时代的查分系统</small>
+                                </div>
+                                <div class="col-sm-6 text-right hidden-xs">
+                                    <div class="inline m-r text-left">
+                                        <div class="m-b-xs">1290 <span class="text-muted">items</span></div>
+                                        <div class="sparkline inline">loading...
+                                        </div>
+                                    </div>
+                                    <div class="inline text-left">
+                                        <div class="m-b-xs">$30,000 <span class="text-muted">revenue</span></div>
+                                        <div class="sparkline inline">loading...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / main header -->
+
+                        <div class="wrapper-md">
+                            <!-- stats -->
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="row row-sm text-center">
+                                        <div class="col-xs-6">
+                                            <div class="panel padder-v item">
+                                                <div class="h1 text-info font-thin h1"><?php echo M('users')->count()+M('system')->where('name = "user-count-plus"')->select()[0]['value']; ?></div>
+                                                <span class="text-muted text-xs">用户数量</span>
+                                                <div class="top text-right w-full">
+                                                    <i class="fa fa-caret-down text-warning m-r-sm"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="block panel padder-v bg-primary item">
+                                                <span class="text-white font-thin h1 block">{$Think.config.query-count} 次</span>
+                                                <span class="text-muted text-xs">查询数量</span>
+                                                <span class="bottom text-right w-full">
+                                                    <i class="fa fa-cloud-upload text-muted m-r-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="block panel padder-v bg-info item">
+                                                <span class="text-white font-thin h1 block">{:M('query_exams')->count();}</span>
+                                                <span class="text-muted text-xs">考试数量</span>
+                                                <span class="top">
+                                                    <i class="fa fa-caret-up text-warning m-l-sm m-r-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="panel padder-v item">
+                                                <div class="font-thin h1"><?php echo round((time()-strtotime("2017-1-11"))/3600/24);?> 天</div>
+                                                <span class="text-muted text-xs">从长郡查分诞生至今</span>
+                                                <div class="bottom">
+                                                    <i class="fa fa-caret-up text-warning m-l-sm m-r-sm"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="panel wrapper">
+                                        <h2 class="m-t-none">公告&提示</h2>
+                                        <div>{$Think.config.overview-notice}</div>
+                                        <div class="line line-lg b-b b-light"></div>
+                                        <div class="text-muted">
+                                            <i class="fa fa-user text-muted"></i> by <a href="" class="m-r-sm">Victor Chen</a>
+                                            <i class="fa fa-clock-o text-muted"></i> 2017-10-20
+                                            <a href="" class="m-l-sm"><i class="fa fa-comment-o text-muted"></i> 0 comments</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- / stats -->
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- /content -->
+
+        <!-- footer -->
+        <include file="Public:footer" />
+        <!-- /footer -->
+    </div>
+</block>
+<block name="custom_css">
+</block>
+<block name="custom_js">
+</block>

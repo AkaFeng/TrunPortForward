@@ -1,0 +1,43 @@
+<extend name="Public:base" />
+<block name="body_content">
+    <div class="app app-header-fixed ">
+
+        <div class="container w-xxl w-auto-xs">
+            <a href class="navbar-brand block m-t">{$Think.config.site-name}</a>
+            <div class="m-b-lg">
+                <div class="wrapper text-center">
+                    <strong>注册到长郡查分2.0</strong>
+                </div>
+                <form name="form" class="form-validation" action="__SELF__" method="post">
+                    <div class="text-danger wrapper text-center">
+
+                    </div>
+                    <div class="list-group list-group-sm">
+                        <div class="list-group-item">
+                            <input type="text" placeholder="用户名" class="form-control no-border" name="uname" required>
+                        </div>
+                        <div class="list-group-item">
+                            <input type="password" placeholder="密码" class="form-control no-border" name="passwd" required>
+                        </div>
+                        <div class="list-group-item">
+                            <input type="text" placeholder="Email地址（建议使用QQ邮箱）" class="form-control no-border" name="email" required>
+                        </div>
+                        <div class="list-group-item">
+                            <input type="text" placeholder="邀请码（可选，若无则在注册后须验证身份）" class="form-control no-border" name="invitation_code">
+                        </div>
+                    </div>
+                    <button type="submit" name="registerSubmit" class="btn btn-lg btn-primary btn-block">提交注册</button>
+                    <a href="/auth/login"><input class="btn btn-lg btn-default btn-block" value="已有账号？返回登录"></a>
+                    <div class="line line-dashed"></div>
+                </form>
+            </div>
+            <div class="text-center">
+                <p>
+                    <small class="text-muted">{$Think.config.copyright-text}</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</block>
+<block name="custom_js">
+</block>

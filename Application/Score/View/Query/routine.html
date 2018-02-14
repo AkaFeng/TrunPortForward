@@ -1,0 +1,151 @@
+<extend name="Public:base" />
+<block name="body_content">
+    <div class="app app-header-fixed <if condition='$Think.config.page-boxed eq 1'>container</if>">
+        <!-- header -->
+        <include file="Public:header" />
+        <!-- /header -->
+
+        <!-- aside -->
+        <include file="Public:sidebar" />
+        <!-- /aside -->
+
+        <!-- content -->
+        <div id="content" class="app-content" role="main">
+            <div class="app-content-body ">
+                <div class="bg-light lter b-b wrapper-md">
+                    <h1 class="m-n font-thin h3"><?php echo $meta_title;?></h1>
+                </div>
+                <div class="wrapper-md">
+                    <div class="row">
+                        <div class="col-md-8" id="rtQueryBox" style="display: none;">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">输入相关信息进行查询</div>
+                                <div class="panel-body">
+                                    <form role="form">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>姓名</label>
+                                                    <input type="text" class="form-control" required="" placeholder="请输入要查询的姓名" id="stuname">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>考号</label>
+                                                    <input type="text" class="form-control" required="" placeholder="请输入对应条形码上的考号" id="stuno">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-success" onclick="routineQuery()">提交查询</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                                <div class="alert alert-warning">
+                                    <p><i class="fa fa-warning"></i>请先在下方找到你参与的考试，并选择对应考试右侧的“进入查询”。</p>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">选择要查询的考试</div>
+                        <div class="table-responsive">
+                            <table class="table table-striped b-t b-light">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">编号</th>
+                                    <th>考试名称</th>
+                                    <th>更新时间</th>
+                                    <th>考试状态</th>
+                                    <th>阅卷状态</th>
+                                    <th>查询状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <volist id="exams_available" name="exams_available">
+                                    <tr>
+                                        <td class="text-center">{$exams_available.id}</td>
+                                        <td>{$exams_available.exam_name}</td>
+                                        <td><if condition="$exams_available.update_at neq '0000-00-00 00:00:00'">{$exams_available.update_at}<else />{$exams_available.create_at}</if></td>
+                                        <td>{$exams_available.exam_end_at|checkExamEnded|getExamStatusFromStatus}</td>
+                                        <td>{$exams_available.mark_status|getMarkStatusFromCode}</td>
+                                        <td>{$exams_available.query_status|getQueryStatusFromCode}</td>
+                                        <td>
+                                            <if condition="$exams_available.query_status eq 'OPENED'"><button class="btn btn-info btn-xs" onclick="routineQueryBox({$exams_available.id})"><i class="fa fa-search"></i> 进入查询</button><else /><button class="btn btn-default btn-xs disabled"><i class="fa fa-ban"></i> 暂不可用</button></if>
+                                        </td>
+                                    </tr>
+                                </volist>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /content -->
+
+        <!-- footer -->
+        <include file="Public:footer" />
+        <!-- /footer -->
+    </div>
+</block>
+<block name="custom_css">
+</block>
+<block name="custom_js">
+    <script>
+        function routineQueryBox(exam_id) {
+            this.exam_id = exam_id;
+            $("#rtQueryBox").show();
+        }
+
+        function routineQuery() {
+            var stuno = $("#stuno").val();
+            var stuname = $("#stuname").val();
+            $.ajax({
+                type: "POST",
+                url: "/Query/Action_rtQuery",
+                data: {"exam_id":this.exam_id,"stuname":stuname,"stuno":stuno},
+                dataType: "json",
+                timeout: 60000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "查询中，请等待",
+                        type: "info"
+                    });
+                },
+                success: function(json){
+                    if(json.success==1){
+                        swal({
+                            title: "{$Think.lang.Global_Success}",
+                            text: json.msg,
+                            type: "success",
+                            timer: 2000
+                        });
+                        $("#resDiv").remove();
+                        $("#rtQueryBox").append(json.resultHtmltable);
+                        return false;
+                    } else if (json.error==1) {
+                        swal({
+                            title: "错误",
+                            text: json.msg,
+                            type: "error",
+                            timer: 1000
+                        });
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+
+        }
+    </script>
+</block>

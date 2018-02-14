@@ -1,0 +1,320 @@
+<extend name="Public:base" />
+<block name="body_content">
+    <div class="app app-header-fixed <if condition='$Think.config.page-boxed eq 1'>container</if>">
+        <!-- header -->
+        <include file="Public:header" />
+        <!-- /header -->
+
+        <!-- aside -->
+        <include file="Public:sidebar" />
+        <!-- /aside -->
+
+        <!-- content -->
+        <div id="content" class="app-content" role="main">
+            <div class="app-content-body ">
+                <div class="bg-light lter b-b wrapper-md">
+                    <h1 class="m-n font-thin h3"><?php echo $meta_title;?></h1>
+                </div>
+                <div class="wrapper-md">
+                    <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <button onclick="$('#examCreate_Div').show();" class="btn btn-xs btn-dark pull-right"><i class="fa fa-plus"></i> 创建考试</button>
+                        考试项目管理
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped b-t b-light">
+                            <thead>
+                            <tr>
+                                <th class="text-center">项目ID</th>
+                                <th>考试名称</th>
+                                <th>上次修改</th>
+                                <th>考试状态</th>
+                                <th>阅卷状态</th>
+                                <th>查询状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <volist id="exams_available" name="exams_available">
+                            <tr>
+                                <td class="text-center">{$exams_available.id}</td>
+                                <td>{$exams_available.exam_name}</td>
+                                <td><if condition="$exams_available.update_at neq '0000-00-00 00:00:00'">{$exams_available.update_at}<else />{$exams_available.create_at}</if></td>
+                                <td>{$exams_available.exam_end_at|checkExamEnded|getExamStatusFromStatus}</td>
+                                <td>{$exams_available.mark_status|getMarkStatusFromCode}</td>
+                                <td>{$exams_available.query_status|getQueryStatusFromCode}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-xs" onclick="getExamInfo({$exams_available.id});"><i class="fa fa-pencil"></i> 编辑</button>
+                                    <button class="btn btn-danger btn-xs" onclick="cfmDelete({$exams_available.id});"><i class="fa fa-trash"></i> 删除</button>
+                                </td>
+                            </tr>
+                            </volist>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                    <div class="panel panel-primary" style="display: none" id="examEdit_Div">
+                        <div class="panel-heading font-bold" id="examEdit_heading">修改考试项目</div>
+                        <div class="panel-body">
+                            <form role="form">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>项目名称</label>
+                                            <input type="text" class="form-control" disabled value="" id="examEdit_examName">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>正考结束时间</label>
+                                            <input type="text" class="form-control" disabled value="" id="examEdit_examEndTime">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="examEdit_markStatus">阅卷状态</label>
+                                            <select id="examEdit_markStatus" onchange="changeMarkStatus(this);" class="form-control">
+                                                <option value="MARKING">阅卷中</option>
+                                                <option value="END">阅卷已结束</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="examEdit_queryStatus">查询状态</label>
+                                            <select id="examEdit_queryStatus" class="form-control" onchange="changeQueryStatus(this);">
+                                                <option value="UNOPENED">未开放查询</option>
+                                                <option value="PROCESSING">数据处理中</option>
+                                                <option value="SENDING">正在向已订阅用户发送成绩</option>
+                                                <option value="OPENED">已开放查询</option>
+                                                <option value="CLOSED">查询暂时关闭</option>
+                                                <option value="END">查询已终止</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary" style="display: none" id="examCreate_Div">
+                        <div class="panel-heading font-bold">创建考试项目</div>
+                        <div class="panel-body">
+                            <form role="form" onsubmit="return false;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>项目名称</label>
+                                            <input type="text" class="form-control" required placeholder="时间+年级+名称,例如：2017.1.1-2017级10月考" id="examCreate_examName">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>正考结束时间（请按照以下格式修改）</label>
+                                            <input type="text" class="form-control" value="{:date('Y-m-d H:i')}" id="examCreate_examEndTime">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger" onclick="createExamSubmit();">提交创建</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /content -->
+
+        <!-- footer -->
+        <include file="Public:footer" />
+        <!-- /footer -->
+    </div>
+</block>
+<block name="custom_css">
+</block>
+<block name="custom_js">
+    <script type="text/javascript">
+        /**
+         * 获取考试信息
+         * @param exam_id
+         */
+        function getExamInfo(exam_id) {
+            this.exam_id = exam_id;
+            $.ajax({
+                type: "GET",
+                url: "/operator/exams/edit/"+exam_id+"?action=get",
+                dataType: "json",
+                data: {},
+                timeout: 10000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "{$Think.lang.AppCreate_Submitting}",
+                        type: "info"
+                    });
+                    $("#examEdit_Div").show();
+                    $("#examEdit_heading").text('修改考试项目 - 当前考试id: '+exam_id);
+                },
+                success: function(json){
+                    swal({
+                        title: "{$Think.lang.Global_Success}",
+                        text: json.msg,
+                        type: "success",
+                        timer: 800
+                    });
+                    if(json.success==1){
+                        $("#examEdit_examName").val(json.exam_name);
+                        $("#examEdit_examEndTime").val(json.exam_end_at);
+                        $("#examEdit_markStatus").val(json.mark_status);
+                        $("#examEdit_queryStatus").val(json.query_status);
+                        return false;
+                    } else if (json.error==1) {
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+        }
+
+        /**
+         * AJAX提交更新阅卷状态
+         */
+        function changeMarkStatus(obj) {
+            $.ajax({
+                type: "POST",
+                url: "/Operator/exams/edit/"+this.exam_id+"?action=update",
+                dataType: "json",
+                data: {"type":"mark_status","value":obj.value},
+                timeout: 10000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "{$Think.lang.AppCreate_Submitting}",
+                        type: "info"
+                    });
+                },
+                success: function(json){
+                    if(json.success==1){
+                        swal({
+                            title: "{$Think.lang.Global_Success}",
+                            text: json.msg,
+                            type: "success",
+                            timer: 1500
+                        });
+                        return false;
+                    } else if (json.error==1) {
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+        }
+
+
+        /**
+         * AJAX提交更新查询状态
+         */
+        function changeQueryStatus(obj) {
+            $.ajax({
+                type: "POST",
+                url: "/Operator/exams/edit/"+this.exam_id+"?action=update",
+                dataType: "json",
+                data: {"type":"query_status","value":obj.value},
+                timeout: 10000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "{$Think.lang.AppCreate_Submitting}",
+                        type: "info"
+                    });
+                },
+                success: function(json){
+                    if(json.success==1){
+                        swal({
+                            title: "{$Think.lang.Global_Success}",
+                            text: json.msg,
+                            type: "success",
+                            timer: 1500
+                        });
+                        return false;
+                    } else if (json.error==1) {
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+        }
+
+        /**
+         * AJAX提交创建考试
+         */
+        function createExamSubmit() {
+            $.ajax({
+                type: "POST",
+                url: "/Operator/Action_dataop_exams_create",
+                dataType: "json",
+                data: {"exam_name":$("#examCreate_examName").val(),"exam_end_at":$("#examCreate_examEndTime").val()},
+                timeout: 10000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "{$Think.lang.AppCreate_Submitting}",
+                        type: "info"
+                    });
+                },
+                success: function(json){
+                    if(json.success==1){
+                        swal({
+                            title: "{$Think.lang.Global_Success}",
+                            text: json.msg,
+                            type: "success",
+                            timer: 1500
+                        });
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                        return false;
+                    } else if (json.error==1) {
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+        }
+        function cfmDelete(exam_id) {
+            var cf = confirm('此操作不可逆，继续？');
+            if (cf==true)
+            {
+                window.location ='/Operator/dataop_exams_delete?exam_id='+exam_id;
+            }
+        }
+    </script>
+</block>

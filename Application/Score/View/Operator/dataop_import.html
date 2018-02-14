@@ -1,0 +1,529 @@
+<extend name="Public:base" />
+<block name="body_content">
+    <div class="app app-header-fixed <if condition='$Think.config.page-boxed eq 1'>container</if>">
+        <!-- header -->
+        <include file="Public:header" />
+        <!-- /header -->
+
+        <!-- aside -->
+        <include file="Public:sidebar" />
+        <!-- /aside -->
+
+        <!-- content -->
+        <div id="content" class="app-content" role="main">
+            <div class="app-content-body ">
+                <div class="bg-light lter b-b wrapper-md">
+                    <h1 class="m-n font-thin h3"><?php echo $meta_title;?></h1>
+                </div>
+
+
+                <div class="wrapper-md">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">考试项目选择</div>
+                                <div class="panel-body">
+                                    <form role="form" onsubmit="return false;">
+                                        <div class="form-group">
+                                            <label>Step1.选择要操作的考试</label>
+                                            <select class="form-control" onchange="selectExam(this);" id="exam">
+                                                <option value="0">---------请选择---------</option>
+                                                <volist id="exams_available" name="exams_available">
+                                                    <option value="{$exams_available.id}" exam_name="{$exams_available.exam_name}"><strong>{$exams_available.exam_name}</strong>[{$exams_available.query_status|getQueryStatusFromCode}]</option>
+                                                </volist>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="display:none;" id="selectExamServerDiv">
+                                            <label>Step2.选择这次考试使用的阅卷服务器</label>
+                                            <select class="form-control" onchange="changeServer(this);" id="imStu_Server">
+                                                <option value="0">---------请选择---------</option>
+                                                <volist id="remote_servers"  name="remote_servers">
+                                                    <option value="{$remote_servers.id}" <if condition="$remote_servers.status eq 'INACTIVE'">disabled</if>>{$remote_servers.name}</option>
+                                                </volist>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="display: none;" id="selectServerExamDiv">
+                                            <label>Step3.选择这次考试在服务器上对应的名称</label>
+                                            <select class="form-control" onchange="selectServerExam(this);" id="imStu_ServerExam">
+                                                <option value="0">---------请选择---------</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7" id="importDiv" style="display:none;">
+                            <div class="btn-group btn-group-justified">
+                                <a href="javascript: $('#importStudentDataDiv').show();$('#importResultDiv').hide();" class="btn btn-warning">导入学生数据</a>
+                                <a href="javascript: $('#importResultDiv').show();$('#importStudentDataDiv').hide();" class="btn btn-info">导入成绩</a>
+                            </div>
+                            <div class="panel panel-warning" id="importStudentDataDiv" style="display:none;">
+                                <div class="panel-heading">导入学生数据</div>
+                                <div class="panel-body">
+                                    <form role="form" onsubmit="return false;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>当前考试</label>
+                                                    <input type="text" class="form-control" disabled value="" id="currentExam">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" id="currentImportedStudentDiv" style="display: none">
+                                                <div class="form-group">
+                                                    <label>已导入学生</label>
+                                                    <input type="text" class="form-control" disabled value="" id="currentImportedStudent">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" id="currentImportedSchoolClassDiv" style="display: none">
+                                                <div class="form-group">
+                                                    <label>已导入学校班级</label>
+                                                    <input type="text" class="form-control" disabled value="" id="currentImportedSchoolClass">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" id="n1">
+                                                <div class="alert alert-{$Think.config.login-page-alert}">
+                                                    <p>请先选择本次考试使用的远程服务器和对应名称，再进行导入学生数据</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8" style="display:none;" id="importActionDiv">
+                                                <div class="form-group">
+                                                    <div class="btn-group">
+                                                        <button type="button" onclick="importProc('clearImportedData')" class="btn btn-warning"><i class="fa fa-warning"></i> 清空当前（若需要重新导入，请务必先执行）</button>
+                                                        <button type="button" onclick="importProc('importStudentData')" class="btn btn-default">1.导入学生数据</button>
+                                                        <button type="button" onclick="importProc('importSchoolClassData')" class="btn btn-default">2.导入学校班级数据</button>
+                                                        <button type="button" onclick="importProc('mergeData')" class="btn btn-default">3.合并数据</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="panel panel-info" id="importResultDiv" style="display:none;">
+                                <div class="panel-heading">导入成绩</div>
+                                <div class="panel-body">
+                                    <form role="form" onsubmit="return false;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>当前考试</label>
+                                                    <input type="text" class="form-control" disabled value="" id="currentExam2">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" id="currentImportedResultDiv" style="display: none">
+                                                <div class="form-group">
+                                                    <label>已导入成绩计数</label>
+                                                    <input type="text" class="form-control" disabled value="{$currentImportedResult}" id="currentImportedResult">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" id="n2">
+                                                <div class="alert alert-{$Think.config.login-page-alert}">
+                                                    <p>请先选择本次考试使用的远程服务器和对应名称，再进行导入成绩数据</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="uploadCase" style="display: none">
+                                            <div class="col-sm-12">
+                                                <div class="alert alert-danger">
+                                                    <p>请先进行右侧Step3:选择考试在服务器上的名称，然后再进行下面的操作</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="alert alert-{$Think.config.login-page-alert}">
+                                                    <p>请点击下方"Step1.刷新表格状态"来查看是否有成绩表格可供导入，若显示空则暂时没有可导入的成绩，这时你可以不断点击下方"Step1.刷新表格状态"按钮</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label>Step1.选择这次考试在服务器上对应的表格名称</label>
+                                                    <select class="form-control" onchange="selectTable(this);" id="importTableSelect">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-default" onclick="importProc('clearImportedResult');">Step0.清空现有成绩</button>
+                                                        <button class="btn btn-warning" onclick="checkTable();">Step1.检查表格状态</button>
+                                                        <button class="btn btn-success" onclick="pullRemoteResult();">Step2.拉取成绩</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <!-- /content -->
+
+        <!-- footer -->
+        <include file="Public:footer" />
+        <!-- /footer -->
+    </div>
+    </div>
+</block>
+<block name="custom_css">
+</block>
+<block name="custom_js">
+    <script>
+        /**
+         * 选择查分平台上的考试项目
+         * @param obj
+         */
+        function selectExam(obj){
+            if (obj.value == 0) {
+                $("#importDiv").hide();return;
+            } else {
+                $("#selectExamServerDiv").show();
+                $("#importDiv").show();
+                this.exam_id = obj.value;
+                var c2 = document.getElementById("exam").options;
+                $("#currentExam").val(c2[obj.selectedIndex].text);
+                $("#currentExam2").val(c2[obj.selectedIndex].text);
+            }
+        }
+
+        /**
+         * 选择服务器
+         * @param obj
+         */
+        function changeServer(obj) {
+            if (obj.value == 0) {
+                $("#selectServerExamDiv").hide();
+                $("#importActionDiv").hide();
+                return;
+            }
+            this.server_id = obj.value;
+            $.ajax({
+                type: "POST",
+                url: "/Operator/Action_dataop_import_getRemoteExams",
+                dataType: "json",
+                data: {"server_id":obj.value,"exam_id":this.exam_id},
+                timeout: 60000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "{$Think.lang.AppCreate_Submitting}",
+                        type: "info"
+                    });
+                },
+                success: function(json){
+                    if(json.success==1){
+                        swal({
+                            title: "{$Think.lang.Global_Success}",
+                            text: json.msg,
+                            type: "success",
+                            timer: 1000
+                        });
+                        $("#currentImportedStudentDiv").show();
+                        $("#currentImportedSchoolClassDiv").show();
+                        $("#currentImportedSchoolClass").val(json.imported_school_class);
+                        $("#currentImportedStudent").val(json.imported_students);
+                        $("#currentImportedResult").val(json.imported_result);
+                        $("#currentImportedResultDiv").show();
+                        $("#uploadCase").show();
+                        $("#n2").hide();
+                        $("#n1").hide();
+                        $("#selectServerExamDiv").show();
+                        $("#imStu_ServerExam").empty();
+                        $("#imStu_ServerExam").append("<option value='0'>---------请选择---------</option>");
+                        for (var subid in json.remote_exams)
+                        {
+                            if (json.remote_exams[subid].prjFinish == 1) {
+                                $("#imStu_ServerExam").append('<option disabled value="'+json.remote_exams[subid].prjSN+'">'+json.remote_exams[subid].prjName+'（已结束）</option>');
+                            } else {
+                                $("#imStu_ServerExam").append('<option value="'+json.remote_exams[subid].prjSN+'">'+json.remote_exams[subid].prjName+'</option>');
+                            }
+                        }
+                        return false;
+                    } else if (json.error==1) {
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+        }
+
+        /**
+         * 选择服务器上的考试
+         * @param obj
+         */
+        function selectServerExam(obj) {
+            this.remote_examSN = obj.value;
+            if (obj.value == 0) {
+                $("#importActionDiv").hide();return;
+            }
+            this.remote_exam_id = obj.value;
+            $("#importActionDiv").show();
+        }
+
+        /**
+         * 导入操作进程
+         */
+        function importProc(action) {
+            switch (action){
+                case 'clearImportedData':
+                    if (confirm('确认清空？')==false){return;}
+                    $.ajax({
+                        type: "POST",
+                        url: "/Operator/dataop_exams_importProcess?action=clearImportedData",
+                        data: {"exam_id":this.exam_id},
+                        dataType: "json",
+                        timeout: 60000,
+                        beforeSend: function(){
+                            swal({
+                                title: "{$Think.lang.Global_Submit}",
+                                text: "{$Think.lang.AppCreate_Submitting}",
+                                type: "info"
+                            });
+                        },
+                        success: function(json){
+                            if(json.success==1){
+                                swal({
+                                    title: "{$Think.lang.Global_Success}",
+                                    text: json.msg,
+                                    type: "success",
+                                    timer: 1000
+                                });
+                                $("#currentImportedSchoolClass").val(0);
+                                $("#currentImportedStudent").val(0);
+                                return false;
+                            } else if (json.error==1) {
+                                return false;
+                            }
+                        },
+                        error: function () {
+                            swal({
+                                title: "{$Think.lang.Global_Error}",
+                                text: "{$Think.lang.Gateway_SubmitError}",
+                                type: "info"
+                            });
+                            return false;
+                        }
+                    });
+                    break;
+                case 'importStudentData':
+                    $.ajax({
+                        type: "POST",
+                        url: "/Operator/dataop_exams_importProcess?action=importStudentData",
+                        data: {"exam_id":this.exam_id,"server_id":this.server_id,"remote_examSN":this.remote_examSN},
+                        dataType: "json",
+                        timeout: 60000,
+                        beforeSend: function(){
+                            swal({
+                                title: "{$Think.lang.Global_Submit}",
+                                text: "导入时间可能较长，请耐心等待，<strong>不要刷新页面或关闭浏览器</strong>",
+                                type: "info"
+                            });
+                        },
+                        success: function(json){
+                            if(json.success==1){
+                                swal({
+                                    title: "{$Think.lang.Global_Success}",
+                                    text: json.msg,
+                                    type: "success",
+                                    timer: 1000
+                                });
+                                $("#currentImportedStudent").val(json.importedStudents);
+                                return false;
+                            } else if (json.error==1) {
+                                return false;
+                            }
+                        },
+                        error: function () {
+                            swal({
+                                title: "{$Think.lang.Global_Error}",
+                                text: "{$Think.lang.Gateway_SubmitError}",
+                                type: "info"
+                            });
+                            return false;
+                        }
+                    });
+                    break;
+                case 'importSchoolClassData':
+                    $.ajax({
+                        type: "POST",
+                        url: "/Operator/dataop_exams_importProcess?action=importSchoolClassData",
+                        data: {"exam_id":this.exam_id,"server_id":this.server_id,"remote_examSN":this.remote_examSN},
+                        dataType: "json",
+                        timeout: 60000,
+                        beforeSend: function(){
+                            swal({
+                                title: "{$Think.lang.Global_Submit}",
+                                text: "导入时间可能较长，请耐心等待，<strong>不要刷新页面或关闭浏览器</strong>",
+                                type: "info"
+                            });
+                        },
+                        success: function(json){
+                            if(json.success==1){
+                                swal({
+                                    title: "{$Think.lang.Global_Success}",
+                                    text: json.msg,
+                                    type: "success",
+                                    timer: 1000
+                                });
+                                $("#currentImportedSchoolClass").val(json.importedSchoolClass);
+                                return false;
+                            } else if (json.error==1) {
+                                return false;
+                            }
+                        },
+                        error: function () {
+                            swal({
+                                title: "{$Think.lang.Global_Error}",
+                                text: "{$Think.lang.Gateway_SubmitError}",
+                                type: "info"
+                            });
+                            return false;
+                        }
+                    });
+                    break;
+                case 'clearImportedResult':
+
+                    if (confirm('确认清空？')==false){return;}
+                    $.ajax({
+                        type: "POST",
+                        url: "/Operator/dataop_exams_importProcess?action=clearImportedResult",
+                        data: {"exam_id":this.exam_id},
+                        dataType: "json",
+                        timeout: 60000,
+                        beforeSend: function(){
+                            swal({
+                                title: "{$Think.lang.Global_Submit}",
+                                text: "{$Think.lang.AppCreate_Submitting}",
+                                type: "info"
+                            });
+                        },
+                        success: function(json){
+                            if(json.success==1){
+                                swal({
+                                    title: "{$Think.lang.Global_Success}",
+                                    text: json.msg,
+                                    type: "success",
+                                    timer: 1000
+                                });
+                                $("#currentImportedResult").val(json.imported_count);
+                                return false;
+                            } else if (json.error==1) {
+                                return false;
+                            }
+                        },
+                        error: function () {
+                            swal({
+                                title: "{$Think.lang.Global_Error}",
+                                text: "{$Think.lang.Gateway_SubmitError}",
+                                type: "info"
+                            });
+                            return false;
+                        }
+                    });
+                    break;
+            }
+        }
+
+        function checkTable(){
+            if (this.remote_examSN == 0 || this.remote_examSN == null) { swal({title:"错误",text:"请先在右侧Step3选择服务器上的考试名称",type:"error"});return false;  }
+            $.ajax({
+                type: "POST",
+                url: "/Operator/dataop_exams_importProcess?action=getAvailableTables",
+                data: {"exam_id":this.exam_id,"server_id":this.server_id,"remote_examSN":this.remote_examSN},
+                dataType: "json",
+                timeout: 60000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "{$Think.lang.AppCreate_Submitting}",
+                        type: "info"
+                    });
+                },
+                success: function(json){
+                    if(json.success==1){
+                        swal({
+                            title: "{$Think.lang.Global_Success}",
+                            text: json.msg,
+                            type: "success",
+                            timer: 1000
+                        });
+                        $("#importTableSelect").empty();
+                        for (var subid in json.remote_exams)
+                        {
+                            console.log(json.remote_exams[subid]);
+                            $("#importTableSelect").append('<option value="'+json.remote_exams[subid].excType2+'">'+json.remote_exams[subid].excName+'</option>');
+                        }
+                        return false;
+                    } else if (json.error==1) {
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+        }
+        function selectTable(obj) {
+            this.remote_resultType = obj.value;
+            return false;
+        }
+
+        /**
+         * 拉取成绩
+         */
+        function pullRemoteResult() {
+            var importTableType = $("#importTableSelect").val();
+            if (importTableType == null) {alert('未选择表格名称！');return false;}
+            $.ajax({
+                type: "POST",
+                url: "/Operator/dataop_exams_importProcess?action=pullRemoteResult",
+                data: {"exam_id":this.exam_id,"server_id":this.server_id,"remote_examSN":this.remote_examSN,"importTableType":importTableType},
+                dataType: "json",
+                timeout: 60000,
+                beforeSend: function(){
+                    swal({
+                        title: "{$Think.lang.Global_Submit}",
+                        text: "导入时间可能较长，请耐心等待，<strong>不要刷新页面或关闭浏览器</strong>",
+                        type: "info"
+                    });
+                },
+                success: function(json){
+                    if(json.success==1){
+                        swal({
+                            title: "{$Think.lang.Global_Success}",
+                            text: json.msg,
+                            type: "success",
+                            timer: 1000
+                        });
+                        $("#currentImportedResult").val(json.imported_count);
+                        return false;
+                    } else if (json.error==1) {
+                        return false;
+                    }
+                },
+                error: function () {
+                    swal({
+                        title: "{$Think.lang.Global_Error}",
+                        text: "{$Think.lang.Gateway_SubmitError}",
+                        type: "info"
+                    });
+                    return false;
+                }
+            });
+        }
+    </script>
+</block>
