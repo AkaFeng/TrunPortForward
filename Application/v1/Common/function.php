@@ -11,60 +11,26 @@
  * @param $code
  * @return mixed
  */
-function getMarkStatusFromCode($code)
+function getVmStatusFromStatus($code)
 {
     $rel = array(
-        "MARKING" => "阅卷中",
-        "END" => "阅卷已结束",
+        "online" => "在线",
+        "offline" => "不在线",
+        "disabled" => "不可用",
     );
     return $rel[$code];
 }
 
 /**
- * 通过查询状态代码获取查询状态
+ * 和上面那个函数一块用的 返回html里label的颜色
  * @param $code
- * @return mixed
  */
-function getQueryStatusFromCode($code)
+function getVmStatusLabel($code)
 {
     $rel = array(
-        "UNOPENED" => "查询未开放",
-        "PROCESSING" => "数据处理中",
-        "SENDING"=> "正在向已订阅用户发送成绩",
-        "OPENED" => "查询已开放",
-        "CLOSED" => "查询暂时关闭",
-        "END" => "查询已结束"
+        "online" => "success",
+        "offline" => "danger",
+        "disabled" => "warning",
     );
     return $rel[$code];
-}
-
-/**
- * 输入考试结束时间，返回状态
- */
-function checkExamEnded($time)
-{
-    if ($time<=getDateTime())
-    {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-/**
- * 根据考试是否结束返回状态文字
- * @param $bool
- * @return string
- */
-function getExamStatusFromStatus($bool)
-{
-    switch ($bool)
-    {
-        case true:
-            return "已结束";
-            break;
-        case false:
-            return "进行中";
-            break;
-    }
 }

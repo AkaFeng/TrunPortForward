@@ -253,7 +253,7 @@ class Solus {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-        return $this->execute(array("action"=>"vserver-info", "vserverid"=>$serverID));
+        return json_decode($this->execute(array("action"=>"vserver-info", "vserverid"=>$serverID)),true);
     }
 
     /**
@@ -269,7 +269,7 @@ class Solus {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-        return $this->execute(array("action"=>"vserver-infoall", "vserverid"=>$serverID, "nostatus"=>$nostatus, "nographs"=>$nographs));
+        return json_decode($this->execute(array("action"=>"vserver-infoall", "vserverid"=>$serverID, "nostatus"=>$nostatus, "nographs"=>$nographs)),true);
     }
 
     /**
@@ -285,7 +285,7 @@ class Solus {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-        return $this->execute(array("action"=>"vserver-status", "vserverid"=>$serverID));
+        return json_decode($this->execute(array("action"=>"vserver-status", "vserverid"=>$serverID)),true);
     }
 
     /**

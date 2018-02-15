@@ -44,10 +44,28 @@
                             <span>全部虚拟机</span>
                         </a>
                         </li>
-                        <li <if condition="$SideBar_Selected eq 'query_qrobot' ">class="active"</if>>
+                        <li <if condition="$SideBar_Selected eq '' ">class="active"</if>>
                         <a href="/query/qrobot">
                             <i class="fa fa-plus"></i>
                             <span>添加虚拟机</span>
+                        </a>
+                        </li>
+                        <!--虚拟机侧栏结束-->
+                        <!--端口管理侧栏-->
+                        <li class="line dk"></li>
+                        <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                            <span>端口转发</span>
+                        </li>
+                        <li <if condition="$SideBar_Selected eq ''">class="active"</if>>
+                        <a href="/vms">
+                            <i class="fa fa-list"></i>
+                            <span>申请列表</span>
+                        </a>
+                        </li>
+                        <li <if condition="$SideBar_Selected eq '' ">class="active"</if>>
+                        <a href="/query/qrobot">
+                            <i class="fa fa-arrow-up"></i>
+                            <span>提交申请</span>
                         </a>
                         </li>
                         <!--虚拟机侧栏结束-->
@@ -79,31 +97,6 @@
                                 <span>{$Think.lang.SideBar_LogOut}</span>
                             </a>
                         </li>
-                        <?php if ($is_op == true and $op_type == "DATA") { ?>
-                        <!--数据特派员侧栏-->
-                        <li class="line dk"></li>
-                        <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-                            <span>数据特派员:管理入口</span>
-                        </li>
-                        <!--<li <if condition="$SideBar_Selected eq 'SideBar_ViewApp' or $SideBar_Selected eq 'SideBar_EditApp' ">class="active"</if>>
-                        <a href="/operator/my">
-                            <i class="fa fa-terminal"></i>
-                            <span>我的信息</span>
-                        </a>
-                        </li>-->
-                        <li <if condition="$SideBar_Selected eq 'dataop_exams' ">class="active"</if>>
-                        <a href="/operator/exams">
-                            <i class="fa fa-table"></i>
-                            <span>考试管理</span>
-                        </a>
-                        </li>
-                        <li <if condition="$SideBar_Selected eq 'dataop_import' ">class="active"</if>>
-                        <a href="/operator/import">
-                            <i class="fa fa-plus-square"></i>
-                            <span>数据导入</span>
-                        </a>
-                        </li>
-                        <?php } ?>
                         <!--长郡查分侧栏结束-->
                     </if>
 
