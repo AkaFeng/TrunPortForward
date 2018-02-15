@@ -36,7 +36,7 @@ class BaseController extends Controller
             //$this->assign('messages',M('messages')->field('title,create_at')->where(array("uid"=>$_SESSION['uid']))->select());
         }
         //$this->assign('user_info',$User->getUserInfoByUid($_SESSION['uid']));
-        if (!logon() and ACTION_NAME != 'login' and ACTION_NAME != 'register' and ACTION_NAME != 'index') {
+        if (!logon() and ACTION_NAME != 'login' and ACTION_NAME != 'register' and ACTION_NAME != 'logout' and ACTION_NAME != 'index') {
             $this->error('未登录！正在跳转至登录页...','/auth/login');
         } else {
             /*if (ACTION_NAME != 'login' and ACTION_NAME != 'register' and ACTION_NAME != 'logout' and session('uid')!=1){
