@@ -10,7 +10,7 @@ class VmController extends BaseController{
     public function vmList()
     {
         $this->assign('SideBar_Selected','VM_vmList');
-        $this->meta_title = '虚拟机列表';
+        $this->meta_title = '虚拟机';
         $this->display();
     }
 

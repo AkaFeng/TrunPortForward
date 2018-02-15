@@ -48,4 +48,12 @@ class AuthController extends BaseController{
             redirect(C('SSO_URL').'?next='.urlencode(getRootURL().'/auth/login'));
         }
     }
+
+    public function logout(){
+        session(null);
+        cookie(null);
+        $_COOKIE['uid'] = null;
+        $_SESSION['uid'] = null;
+        $this->success('成功退出！正在跳转...','/');
+    }
 }

@@ -1,5 +1,6 @@
 Runtime/
 .idea
 Application/v1/Conf/dbc.php
+Application/Main/Conf/dbc.php
 Application/Common/Conf/config.php
 .DS_Store
