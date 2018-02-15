@@ -54,6 +54,6 @@ class AuthController extends BaseController{
         cookie(null);
         $_COOKIE['uid'] = null;
         $_SESSION['uid'] = null;
-        $this->success('成功退出！正在跳转...','/');
+        redirect(C('SSO_RootURL').'/auth/logout');
     }
 }

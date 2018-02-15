@@ -32,5 +32,6 @@ return array(
     'LANG_AUTO_DETECT' => true, // 自动侦测语言 开启多语言功能后有效
     'LANG_LIST'        => 'en-US,zh-CN', // 允许切换的语言列表 用逗号分隔
     'VAR_LANGUAGE'     => 'l', // 默认语言切换变量
-    'SSO_URL'          => 'http://ims.lc.local/auth/login',
+    'SSO_URL'          => 'https://ims.bgp.do/auth/login',
+    'SSO_RootURL'      => 'https://ims.bgp.do'
 );
