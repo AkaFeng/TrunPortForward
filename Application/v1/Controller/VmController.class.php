@@ -22,6 +22,12 @@ class VmController extends BaseController{
             $SolusVMInstance = new \Solus($svm_api_info['api_address'],$svm_api_info['api_id'],$svm_api_info['api_key']);
             $this_vm_info = $SolusVMInstance->getServerInfo(intval($vms_info[$i]['svm_vm_id']));
             $this_vm_state = $SolusVMInstance->getServerState(intval($vms_info[$i]['svm_vm_id']),false,true);
+            //更新hostname
+            if ($vms_info[$i]['hostname'] != $this_vm_info['hostname'])
+            {
+                $Vms->where(array("id"=>$vms_info[$i]['id']))->data(array("hostname"=>$this_vm_info['hostname']))->save();
+            }
+
             $vms_info[$i]['main_ipaddress'] = $this_vm_info['ipaddress'];
             $vms_info[$i]['hostname'] = $this_vm_info['hostname'];
             $vms_info[$i]['memory'] = $this_vm_info['memory'];

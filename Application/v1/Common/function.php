@@ -51,7 +51,8 @@ function getPortApplyStatusFromStatus($code)
         "UNUSED" => "未占用",
         "APPLIED" => "已提出申请",
         "REJECTED" => "申请被驳回",
-        "USED" => "已占用"
+        "USED" => "使用中",
+        "RELEASED" => "已释放",
     );
     return $rel[$code];
 }
