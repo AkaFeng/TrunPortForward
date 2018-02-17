@@ -7,7 +7,9 @@
  */
 namespace v1\Controller;
 
+use v1\Model\IpsModel;
 use v1\Model\PortRangesModel;
+use v1\Model\PortsModel;
 
 class OperatorController extends BaseController
 {
@@ -22,9 +24,11 @@ class OperatorController extends BaseController
 
     public function managePorts()
     {
+        $Ips = new IpsModel();
         $PortRanges = new PortRangesModel();
 
-        $this->assign('port_ranges',$PortRanges->order('id desc')->select());
+        $this->assign('ips',$Ips->order('id desc')->select());
+        $this->assign('port_ranges',$PortRanges->where('status != "DELETED"')->order('id desc')->select());
         $this->assign('SideBar_Selected','Admin_Ports');
         $this->meta_title = '管理员::端口Range';
         $this->display();
@@ -42,5 +46,42 @@ class OperatorController extends BaseController
         $this->assign('SideBar_Selected','Admin_SiteConfig');
         $this->meta_title = '管理员::站点配置';
         $this->display();
+    }
+
+    public function Action_port_range_create()
+    {
+        $ip_id = I('post.ip_id');
+        $start_port = I('post.start_port');
+        $end_port = I('post.end_port');
+        $range_id = (new PortRangesModel())->data(array("ip_id"=>$ip_id,"start_port"=>$start_port,"end_port"=>$end_port,"operator_id"=>getUID()))->add();
+        $Ports = new PortsModel();
+        for ($i=0;$i<=$end_port-$start_port;$i++)
+        {
+            $Ports->data(array(
+                "port" => $start_port+$i,
+                "ip_id" => $ip_id,
+                "range_id" => $range_id,
+                "create_at" => getDateTime(),
+                "status" => "NORMAL",
+                "apply_status" => "UNUSED",
+            ))->add();
+        }
+        echo json_encode(array(
+            "success" => true,
+            "msg" => "已经成功添加端口Range",
+        ));
+    }
+
+    public function Action_port_range_delete()
+    {
+        $id = I('post.id');
+        (new PortRangesModel())->where(array("id"=>$id))->data(array("status"=>"DELETED"))->save();
+        (new PortsModel())->where(array("range_id"=>$id))->data(array("status"=>"CANCELLED"))->save();
+        echo json_encode(array(
+            "success" => true,
+            "msg" => "已经成功删除,id=".$id.',关联端口状态已调整为CANCELLED',
+        ));
+
+        //TODO:删除后还需执行删除转发操作
     }
 }

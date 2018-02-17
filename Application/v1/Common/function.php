@@ -35,3 +35,23 @@ function getVmStatusLabel($code)
     );
     return $rel[$code];
 }
+
+function getPortStatusFromStatus($code)
+{
+    $rel = array(
+        "NORMAL" => "正常",
+        "CANCELLED" => "已取消",
+    );
+    return $rel[$code];
+}
+
+function getPortApplyStatusFromStatus($code)
+{
+    $rel = array(
+        "UNUSED" => "未占用",
+        "APPLIED" => "已提出申请",
+        "REJECTED" => "申请被驳回",
+        "USED" => "已占用"
+    );
+    return $rel[$code];
+}
