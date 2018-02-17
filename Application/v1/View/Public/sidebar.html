@@ -44,8 +44,8 @@
                             <span>全部虚拟机</span>
                         </a>
                         </li>
-                        <li <if condition="$SideBar_Selected eq '' ">class="active"</if>>
-                        <a href="/query/qrobot">
+                        <li <if condition="$SideBar_Selected eq 'VM_vmAdd' ">class="active"</if>>
+                        <a href="/vm/add">
                             <i class="fa fa-plus"></i>
                             <span>添加虚拟机</span>
                         </a>
@@ -56,20 +56,45 @@
                         <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                             <span>端口转发</span>
                         </li>
-                        <li <if condition="$SideBar_Selected eq ''">class="active"</if>>
-                        <a href="/vms">
+                        <li <if condition="$SideBar_Selected eq 'Port_Applies'">class="active"</if>>
+                        <a href="/port/applies">
                             <i class="fa fa-list"></i>
                             <span>申请列表</span>
                         </a>
                         </li>
-                        <li <if condition="$SideBar_Selected eq '' ">class="active"</if>>
-                        <a href="/query/qrobot">
+                        <li <if condition="$SideBar_Selected eq 'Port_Apply' ">class="active"</if>>
+                        <a href="/port/apply">
                             <i class="fa fa-arrow-up"></i>
                             <span>提交申请</span>
                         </a>
                         </li>
                         <!--虚拟机侧栏结束-->
-
+                        <?php if ($user_info['type'] == 'ADMIN') {?>
+                            <!--管理员侧栏-->
+                            <li class="line dk"></li>
+                            <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                                <span>管理员</span>
+                            </li>
+                            <li <if condition="$SideBar_Selected eq 'Admin_Applies'">class="active"</if>>
+                            <a href="/operator/applies">
+                                <i class="fa fa-list-ol"></i>
+                                <span>管理员::审核</span>
+                            </a>
+                            </li>
+                            <li <if condition="$SideBar_Selected eq 'Admin_Ports'">class="active"</if>>
+                            <a href="/operator/managePorts">
+                                <i class="fa fa-list-alt"></i>
+                                <span>管理员::端口Range</span>
+                            </a>
+                            </li>
+                            <li <if condition="$SideBar_Selected eq 'Admin_SiteConfig' ">class="active"</if>>
+                            <a href="/operator/siteConfig">
+                                <i class="fa fa-cog"></i>
+                                <span>管理员::站点配置</span>
+                            </a>
+                            </li>
+                            <!--管理员侧栏结束-->
+                        <?php } ?>
 
                     <!--我的 侧栏-->
                     <li class="line dk hidden-folded"></li>

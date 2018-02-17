@@ -17,6 +17,8 @@ class BaseController extends Controller
 {
     protected $Auth;
 
+    protected $user_info;
+
     public function _initialize()
     {
         $System = M('system')->getField('name,value');
@@ -35,7 +37,8 @@ class BaseController extends Controller
             }
             //$this->assign('messages',M('messages')->field('title,create_at')->where(array("uid"=>$_SESSION['uid']))->select());
         }
-        //$this->assign('user_info',$User->getUserInfoByUid($_SESSION['uid']));
+        $this->user_info = (new UsersModel('users','ims_'))->getUserInfoByUid($_SESSION['uid']);
+        $this->assign('user_info',$this->user_info);
         if (!logon() and ACTION_NAME != 'login' and ACTION_NAME != 'register' and ACTION_NAME != 'logout' and ACTION_NAME != 'index') {
             $this->error('未登录！正在跳转至登录页...','/auth/login');
         } else {

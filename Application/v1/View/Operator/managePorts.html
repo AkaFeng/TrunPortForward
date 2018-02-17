@@ -1,0 +1,70 @@
+<extend name="Public:base" />
+<block name="body_content">
+    <div class="app app-header-fixed <if condition='$Think.config.page-boxed eq 1'>container</if>">
+        <!-- header -->
+        <include file="Public:header" />
+        <!-- /header -->
+
+        <!-- aside -->
+        <include file="Public:sidebar" />
+        <!-- /aside -->
+
+        <!-- content -->
+        <div id="content" class="app-content" role="main">
+            <div class="app-content-body ">
+                <div class="bg-light lter b-b wrapper-md">
+                    <h1 class="m-n font-thin h3"><?php echo $meta_title;?></h1>
+                </div>
+
+                <div class="wrapper-md">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <button onclick="return false;" class="btn btn-xs btn-dark pull-right"><i class="fa fa-plus"></i> 添加端口范围</button>
+                            允许的端口范围
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped b-t b-light">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">IP地址</th>
+                                    <th class="text-center">服务器节点</th>
+                                    <th class="text-center">端口起始</th>
+                                    <th class="text-center">端口结束</th>
+                                    <th class="text-center">用量</th>
+                                    <th class="text-center">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <volist id="port_ranges" name="port_ranges">
+                                    <tr>
+                                        <td class="text-center">{$port_ranges.id}</td>
+                                        <td class="text-center">{.}</td>
+                                        <td class="text-center">{.}</td>
+                                        <td class="text-center">{:D('Hosts')->getHostInfoById($vms_info['host_id'])['hostname']}</td>
+                                        <td class="text-center">{.}</td>
+                                        <td class="text-center"><span class="label label-{$vms_info.state|getVmStatusLabel}"> {.|}</span></td>
+                                        <td class="text-center">
+                                            <button class="btn btn-warning btn-xs" onclick="getExamInfo({$exams_available.id});"><i class="fa fa-warning"></i> 停用</button>
+                                            <button class="btn btn-danger btn-xs" onclick="getExamInfo({$exams_available.id});"><i class="fa fa-times"></i> 删除</button>
+                                        </td>
+                                    </tr>
+                                </volist>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /content -->
+
+        <!-- footer -->
+        <include file="Public:footer" />
+        <!-- /footer -->
+    </div>
+</block>
+<block name="custom_css">
+</block>
+<block name="custom_js">
+</block>

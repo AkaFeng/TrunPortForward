@@ -35,5 +35,10 @@ class VmController extends BaseController{
         $this->display();
     }
 
-    public function addVm(){}
+    public function addVm()
+    {
+        $this->assign('SideBar_Selected','VM_vmAdd');
+        $this->meta_title = '添加虚拟机';
+        $this->display();
+    }
 }

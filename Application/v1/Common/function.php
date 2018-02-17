@@ -24,6 +24,7 @@ function getVmStatusFromStatus($code)
 /**
  * 和上面那个函数一块用的 返回html里label的颜色
  * @param $code
+ * @return string
  */
 function getVmStatusLabel($code)
 {
