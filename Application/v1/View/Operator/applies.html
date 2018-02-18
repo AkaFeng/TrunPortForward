@@ -53,7 +53,7 @@
                                         <th class="text-center">用户</th>
                                         <th class="text-center">虚拟机</th>
                                         <th class="text-center">公网域</th>
-                                        <th class="text-center">目标端口（公网）</th>
+                                        <th class="text-center">目标端口</th>
                                         <th class="text-center">来源端口</th>
                                         <th class="text-center">操作</th>
                                     </tr>
@@ -62,7 +62,23 @@
                                     <volist id="ports_info" name="ports_info">
                                         <tr>
                                             <td class="text-center">{$ports_info.id}</td>
-                                            <td class="text-center">{uname}</td>
+                                            <td class="text-center">{:M('users','ims_',array(
+                                                'db_type'    =>   'mysql',
+                                                'db_host'    =>   'localhost',
+                                                'db_user'    =>   'ims',
+                                                'db_pwd'     =>   'IMS@LightCloud.com',
+                                                'db_port'    =>    3306,
+                                                'db_name'    =>    'ims',
+                                                'db_charset' =>    'utf8',
+                                                ))->where(array("uid"=>D('vms')->where(array("id"=>$ports_info['vm_id']))->select()[0]['uid']))->select()[0]['first_name']} {:M('users','ims_',array(
+                                                'db_type'    =>   'mysql',
+                                                'db_host'    =>   'localhost',
+                                                'db_user'    =>   'ims',
+                                                'db_pwd'     =>   'IMS@LightCloud.com',
+                                                'db_port'    =>    3306,
+                                                'db_name'    =>    'ims',
+                                                'db_charset' =>    'utf8',
+                                                ))->where(array("uid"=>D('vms')->where(array("id"=>$ports_info['vm_id']))->select()[0]['uid']))->select()[0]['last_name']}</td>
                                             <td class="text-center">{:D('vms')->where(array("id"=>$ports_info['vm_id']))->select()[0]['hostname']}</td>
                                             <td class="text-center">{:D('ips')->where(array("id"=>$ports_info['ip_id']))->select()[0]['ip_address']}</td>
                                             <td class="text-center">{$ports_info.port}</td>

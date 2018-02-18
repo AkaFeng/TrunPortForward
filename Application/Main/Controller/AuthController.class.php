@@ -59,7 +59,16 @@ class AuthController extends BaseController{
                     $this->error('您提交的登陆凭据与您在客户中心的不一致，请检查');exit;
                 }
 
+                //获取姓名等信息
+                $client_detail = json_decode(($Curl->post('https://my.lightvm.com/includes/api.php',array(
+                    "identifier" => "mBoXSW7mhbvhS1d5uCDhJnToJdOWLOnU",
+                    "secret" => "nxjmwj2RXBiJGDqmLR1CqhaybtxGES7v",
+                    "responsetype" => "json",
 
+                    "action" => "GetClientsDetails",
+                    "stats" => false,
+                    "clientid" => $curl_result['userid']
+                )))->response,true);
                 $Users = new UsersModel();
                 //Step2.判断是否已在平台中存在
                 $Q2 = $Users->where(array("email"=>$email))->select();
@@ -68,6 +77,8 @@ class AuthController extends BaseController{
                 {
                     //Step3.不存在则新建用户并登陆
                     $uid = $Users->data(array(
+                        "first_name" => $client_detail['firstname'],
+                        "last_name" => $client_detail['lastname'],
                         "passwd" => $passwd,
                         "email"=>$email,
                         "last_login_ip" => get_client_ip(),
@@ -78,6 +89,8 @@ class AuthController extends BaseController{
                     //Step3.存在则直接登陆
                     session('uid',$Q2[0]['uid']);
                     M('users')->where(array("uid"=>$Q2[0]['uid']))->data(array(
+                        "first_name" => $client_detail['firstname'],
+                        "last_name" => $client_detail['lastname'],
                         "passwd" => $passwd,
                         "ip"=>get_client_ip(),
                         "last_login_time"=>getDateTime(),
