@@ -76,6 +76,7 @@ class OperatorController extends BaseController
                 "apply_status" => "UNUSED",
             ))->add();
         }
+        LOGGER('Created Range id:'.$range_id,"RANGE_CREATE");
         echo json_encode(array(
             "success" => true,
             "msg" => "已经成功添加端口Range",
@@ -89,7 +90,7 @@ class OperatorController extends BaseController
         (new PortsModel())->where(array("range_id"=>$id))->data(array("status"=>"CANCELLED"))->save();
         echo json_encode(array(
             "success" => true,
-            "msg" => "已经成功删除,id=".$id.',关联端口状态已调整为CANCELLED',
+            "msg" => "已经成功删除,id=".$id.',关联端口状态已调整为CANCELLED，请手动释放对应端口',
         ));
 
         //TODO:删除后还需执行删除转发操作
@@ -118,6 +119,7 @@ class OperatorController extends BaseController
                 {
                     $EXEC_RES = $Hosts->openPortForwardTCP($host_info['id'],$ip_info['ip_address'],$port_info['port'],$port_info['connect_port'],$vm_info['svm_internal_ip'],$port_id);
                     $Ports->where(array("id"=>$port_id))->data(array("apply_status"=>"USED","used_at"=>getDateTime(),"operator_uid"=>getUID()))->save();
+                    LOGGER("Approved port_id".$port_id,"APPROVE_PORT");
                     echo json_encode(array(
                         "success" => true,
                         "msg" => "审核成功"

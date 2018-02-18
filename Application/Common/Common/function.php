@@ -166,3 +166,15 @@ function formatSize($size)
 
     return $size . $units[$unit];
 }
+
+function LOGGER($content,$type)
+{
+    $Log = M('log');
+    $Log->data(array(
+        "content" => $content,
+        "type" => $type,
+        "uid" => getUID(),
+        "log_at" => getDateTime(),
+        "log_ip" => get_client_ip(),
+    ))->add();
+};

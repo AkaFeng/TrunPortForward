@@ -37,6 +37,7 @@ class AuthController extends BaseController{
                     "last_login_time"=>getDateTime(),
                     "last_login_ip" => get_client_ip()
                 ))->save();
+                LOGGER('Admin '.$Q[0]['uname'].' Logged',"AUTH_Login");
                 (new SessionsModel())->createSession(session('uid'));
                 if (empty(I('get.next'))) {
                     redirect('/');
@@ -88,6 +89,7 @@ class AuthController extends BaseController{
 
                 if (!$Q2)
                 {
+                    LOGGER('User '.$Q[0]['uname'].' Registered',"AUTH_Reg");
                     //Step3.不存在则新建用户并登陆
                     $uid = $Users->data(array(
                         "first_name" => $client_detail['firstname'],
@@ -99,6 +101,7 @@ class AuthController extends BaseController{
                     ))->add();
                     session('uid',$uid);
                 } else {
+                    LOGGER('User '.$Q[0]['uname'].' Logged',"AUTH_Login");
                     //Step3.存在则直接登陆
                     session('uid',$Q2[0]['uid']);
                     M('users')->where(array("uid"=>$Q2[0]['uid']))->data(array(
@@ -122,7 +125,7 @@ class AuthController extends BaseController{
                         $svm_vm_node_id =  getCustomFieldValue($this_product_info,'nodeid');
                         if (!$Vms->where(array("uid"=>session('uid'),"svm_vm_id"=>$svm_vm_id))->select())
                         {
-                            $Vms->data(array(
+                            $vm_id = $Vms->data(array(
                                 "svm_server_id" => 1,
                                 "host_id" => (new HostsModel())->where(array("svm_nodeid"=>$svm_vm_node_id))->select()[0]['id'],
                                 "uid" => getUID(),
@@ -130,6 +133,7 @@ class AuthController extends BaseController{
                                 "svm_internal_ip" => $svm_vm_internal_ip,
                                 "create_at" => getDateTime(),
                             ))->add();
+                            LOGGER('vmid:'.$vm_id.' Imported',"VM_IMPORT");
                         }
                     }
                 }

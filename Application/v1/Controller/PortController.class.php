@@ -128,6 +128,7 @@ class PortController extends BaseController{
                 "status" => $port_info['status'],
                 "apply_status" => "UNUSED",
             ))->add();
+            LOGGER('port_id:'.$port_id.' Released',"PORT_RELEASE");
             echo json_encode(array(
                 "success" => true,
                 "msg" => "成功释放端口"
@@ -161,6 +162,7 @@ class PortController extends BaseController{
                 "vm_id" => $vm_id,
                 "apply_status" => "APPLIED",
             ))->save();
+            LOGGER('Applied port_id '.$port_id,"APPLY_PORT");
             echo json_encode(array(
                 "success" => true,
                 "msg" => "已成功提出申请，请耐心等待管理员审核！"
