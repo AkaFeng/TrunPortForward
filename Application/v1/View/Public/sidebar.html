@@ -57,7 +57,7 @@
                             <span>端口转发</span>
                         </li>
                         <li <if condition="$SideBar_Selected eq 'Port_Applies'">class="active"</if>>
-                        <a href="/port/applies">
+                        <a href="/port/applies?type=approved">
                             <i class="fa fa-list"></i>
                             <span>申请列表</span>
                         </a>
@@ -76,7 +76,7 @@
                                 <span>管理员</span>
                             </li>
                             <li <if condition="$SideBar_Selected eq 'Admin_Applies'">class="active"</if>>
-                            <a href="/operator/applies">
+                            <a href="/operator/applies?type=APPLIED">
                                 <i class="fa fa-list-ol"></i>
                                 <span>管理员::审核</span>
                             </a>

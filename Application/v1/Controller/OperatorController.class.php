@@ -36,6 +36,11 @@ class OperatorController extends BaseController
 
     public function applies()
     {
+        $Ports = new PortsModel();
+        $type = I('get.type');
+        if (empty($type)) { $this->error('Type Invalid!');}
+        $this_ports_info = $Ports->where(array("apply_status"=>$type))->order('id desc')->select();
+        $this->assign('ports_info',$this_ports_info);
         $this->assign('SideBar_Selected','Admin_Applies');
         $this->meta_title = '管理员::审核';
         $this->display();
@@ -48,6 +53,9 @@ class OperatorController extends BaseController
         $this->display();
     }
 
+    /**
+     * 创建端口允许范围
+     */
     public function Action_port_range_create()
     {
         $ip_id = I('post.ip_id');
@@ -83,5 +91,40 @@ class OperatorController extends BaseController
         ));
 
         //TODO:删除后还需执行删除转发操作
+    }
+
+    /**
+     * 审核端口
+     */
+    public function Action_approvePort()
+    {
+        $port_id = I('post.port_id');
+        $type = I('post.type');
+        $Ports = new PortsModel();
+        switch ($type)
+        {
+            case 'SINGLE':
+                if ($Ports->where(array("id"=>$port_id,"apply_status"=>"APPLIED","status"=>"NORMAL"))->select())
+                {
+                    $Ports->where(array("id"=>$port_id))->data(array("apply_status"=>"USED","used_at"=>getDateTime(),"operator_uid"=>getUID()))->save();
+                    echo json_encode(array(
+                        "success" => true,
+                        "msg" => "审核成功"
+                    ));
+                } else {
+                    echo json_encode(array(
+                        "error" => true,
+                        "msg" => "审核失败，也许在上一秒已经被你的好基友审核过了",
+                    ));
+                }
+                break;
+            case 'ALL':
+                $Ports->where(array("apply_status"=>"APPLIED","status"=>"NORMAL"))->data(array("apply_status"=>"USED","used_at"=>getDateTime(),"operator_uid"=>getUID()))->save();
+                echo json_encode(array(
+                    "success" => true,
+                    "msg" => "审核成功"
+                ));
+                break;
+        }
     }
 }

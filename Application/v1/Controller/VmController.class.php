@@ -7,6 +7,7 @@
  */
 namespace v1\Controller;
 
+use v1\Model\PortsModel;
 use v1\Model\SvmServersModel;
 use v1\Model\VmsModel;
 
@@ -28,6 +29,7 @@ class VmController extends BaseController{
                 $Vms->where(array("id"=>$vms_info[$i]['id']))->data(array("hostname"=>$this_vm_info['hostname']))->save();
             }
 
+            $vms_info[$i]['port_usages'] = (new PortController())->port_usages($vms_info[$i]['id']);
             $vms_info[$i]['main_ipaddress'] = $this_vm_info['ipaddress'];
             $vms_info[$i]['hostname'] = $this_vm_info['hostname'];
             $vms_info[$i]['memory'] = $this_vm_info['memory'];

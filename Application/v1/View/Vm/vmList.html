@@ -39,6 +39,7 @@
                                     <th class="text-center">IP地址</th>
                                     <th class="text-center">服务器节点</th>
                                     <th class="text-center">内存</th>
+                                    <th class="text-center">端口用量</th>
                                     <th class="text-center">状态</th>
                                     <th class="text-center">操作</th>
                                 </tr>
@@ -51,6 +52,7 @@
                                         <td class="text-center">{$vms_info.main_ipaddress}</td>
                                         <td class="text-center">{:D('Hosts')->getHostInfoById($vms_info['host_id'])['hostname']}</td>
                                         <td class="text-center">{$vms_info.memory|formatSize}</td>
+                                        <td class="text-center">{$vms_info.port_usages.used}/{$vms_info.port_usages.allocated}</td>
                                         <td class="text-center"><span class="label label-{$vms_info.state|getVmStatusLabel}"> {$vms_info.state|getVmStatusFromStatus}</span></td>
                                         <td class="text-center">
                                             <button class="btn btn-primary btn-xs" onclick="alert('暂未实现')"><i class="fa fa-cogs"></i> 管理</button>

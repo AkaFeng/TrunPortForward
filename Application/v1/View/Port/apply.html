@@ -13,7 +13,7 @@
         <div id="content" class="app-content" role="main">
             <div class="app-content-body ">
                 <div class="bg-light lter b-b wrapper-md">
-                    <h1 class="m-n font-thin h3"><?php echo $meta_title;?> - <span class="label label-info">当前虚拟机：{$vm_info.hostname}</span></h1>
+                    <h1 class="m-n font-thin h3"><?php echo $meta_title;?> - <span class="label label-info">当前虚拟机：{$vm_info.hostname}</span> <span class="label label-primary">端口用量：{$port_usages.used}/{$port_usages.allocated}</span></h1>
                 </div>
                 <div class="wrapper-md">
                     <volist id="ips_info" name="ips_info">

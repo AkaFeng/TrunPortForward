@@ -89,4 +89,5 @@ return array(
     'AppCreate_AppAccessSmallPUBLIC' => 'Public',
     'AppCreate_SelectGateways' => 'Select the payment gateways for this app',
     'AppCreate_SubmitSuccess' => 'Your app configurations have been saved',
+    'AppCreate_Submitting' => 'Submitting...',
 );

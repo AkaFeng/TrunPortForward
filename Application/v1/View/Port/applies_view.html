@@ -17,42 +17,51 @@
                 </div>
 
                 <div class="wrapper-md">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <a href="/port/apply"><button class="btn btn-xs btn-dark pull-right"><i class="fa fa-plus"></i> 申请新端口</button></a>
-                            我的申请&端口列表
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped b-t b-light">
-                                <thead>
-                                <tr>
-                                    <th class="text-center">#</th>
-                                    <th class="text-center">虚拟机</th>
-                                    <th class="text-center">公网域</th>
-                                    <th class="text-center">目标端口（公网）</th>
-                                    <th class="text-center">来源端口</th>
-                                    <th class="text-center">通过时间</th>
-                                    <th class="text-center">状态</th>
-                                    <th class="text-center">操作</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <volist id="ports_info" name="ports_info">
-                                    <tr>
-                                        <td class="text-center">{$ports_info.id}</td>
-                                        <td class="text-center">{:D('vms')->where(array("id"=>$ports_info['vm_id']))->select()[0]['hostname']}</td>
-                                        <td class="text-center">{:D('ips')->where(array("id"=>$ports_info['ip_id']))->select()[0]['ip_address']}</td>
-                                        <td class="text-center">{$ports_info.port}</td>
-                                        <td class="text-center">{$ports_info.connect_port}</td>
-                                        <td class="text-center">{$ports_info.used_at}</td>
-                                        <td class="text-center">{$ports_info.apply_status|getPortApplyStatusFromStatus}</td>
-                                        <td class="text-center">
-                                            <if condition="$ports_info.apply_status eq 'RELEASED'"><button class="btn btn-default btn-xs" disabled><i class="fa fa-ban"></i> 不可用</button><else /><button class="btn btn-danger btn-xs" onclick="releasePort({$ports_info.id});"><i class="fa fa-times"></i> 释放</button></if>
-                                        </td>
-                                    </tr>
-                                </volist>
-                                </tbody>
-                            </table>
+                    <div class="tab-container">
+                        <ul class="nav nav-tabs">
+                            <li <if condition="$Think.get.type eq 'approved'"> class="active"</if>> <a href="/port/applies?type=approved">已通过 <span class="badge bg-success badge-sm m-l-xs"></span></a></li>
+                            <li <if condition="$Think.get.type eq 'applied'"> class="active"</if>> <a href="/port/applies?type=applied">审核中 <span class="badge bg-danger badge-sm m-l-xs"></span></a></li>
+                            <li <if condition="$Think.get.type eq 'rejected'"> class="active"</if>> <a href="/port/applies?type=rejected">已驳回 <span class="badge badge-sm m-l-xs"></span></a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <a href="/port/apply"><button class="btn btn-xs btn-dark pull-right"><i class="fa fa-plus"></i> 申请新端口</button></a>
+                                    我的申请&端口列表
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped b-t b-light">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-center">#</th>
+                                            <th class="text-center">虚拟机</th>
+                                            <th class="text-center">公网域</th>
+                                            <th class="text-center">目标端口（公网）</th>
+                                            <th class="text-center">来源端口</th>
+                                            <th class="text-center">通过时间</th>
+                                            <th class="text-center">状态</th>
+                                            <th class="text-center">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <volist id="ports_info" name="ports_info">
+                                            <tr>
+                                                <td class="text-center">{$ports_info.id}</td>
+                                                <td class="text-center">{:D('vms')->where(array("id"=>$ports_info['vm_id']))->select()[0]['hostname']}</td>
+                                                <td class="text-center">{:D('ips')->where(array("id"=>$ports_info['ip_id']))->select()[0]['ip_address']}</td>
+                                                <td class="text-center">{$ports_info.port}</td>
+                                                <td class="text-center">{$ports_info.connect_port}</td>
+                                                <td class="text-center">{$ports_info.used_at}</td>
+                                                <td class="text-center">{$ports_info.apply_status|getPortApplyStatusFromStatus}</td>
+                                                <td class="text-center">
+                                                    <if condition="$ports_info.apply_status eq 'USED'"><button class="btn btn-danger btn-xs" onclick="releasePort({$ports_info.id});"><i class="fa fa-times"></i> 释放</button><else /><button class="btn btn-default btn-xs" disabled><i class="fa fa-ban"></i> 不可用</button></if>
+                                                </td>
+                                            </tr>
+                                        </volist>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

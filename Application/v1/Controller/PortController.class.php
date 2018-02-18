@@ -6,11 +6,19 @@
  * Time: 12:32 PM
  */
 namespace v1\Controller;
+use function Couchbase\defaultDecoder;
 use v1\Model\IpsModel;
 use v1\Model\PortsModel;
 use v1\Model\VmsModel;
 
 class PortController extends BaseController{
+    public function port_usages($vm_id)
+    {
+        $all_count = (new VmsModel())->where(array("id"=>$vm_id))->select()[0]['port_allocated_count'];
+        $used_count = (new PortsModel())->where(array("apply_status"=>"UNUSED","vm_id"=>$vm_id,"status"=>"NORMAL"))->count()+(new PortsModel())->where(array("apply_status"=>"APPLIED","vm_id"=>$vm_id,"status"=>"NORMAL"))->count();
+        return array("allocated"=>$all_count,"used"=>$used_count);
+    }
+
     public function applies_view()
     {
         $Vms = new VmsModel();
@@ -18,9 +26,24 @@ class PortController extends BaseController{
         $Ports = new PortsModel();
         $user_ports = [];
         $j = 0;
+        switch (I('get.type'))
+        {
+            case 'approved':
+                $type = 'USED';
+                break;
+            case 'applied':
+                $type = 'APPLIED';
+                break;
+            case 'rejected':
+                $type = 'REJECTED';
+                break;
+            default:
+                $this->error('Invalid Type!');
+        }
+        //TODO:用户部分数量统计
         for ($i=0;$i<count($user_vms);$i++)
         {
-            $this_vm_ports_info = $Ports->where(array("vm_id"=>$user_vms[$i]['id']))->where('status != "RELEASED"')->select();
+            $this_vm_ports_info = $Ports->where(array("vm_id"=>$user_vms[$i]['id'],"apply_status"=>$type))->select();
             for ($m=0;$m<count($this_vm_ports_info);$m++)
             {
                 $user_ports[$j] = $this_vm_ports_info[$m];
@@ -65,7 +88,7 @@ class PortController extends BaseController{
         }
 
 
-
+        $this->assign('port_usages',$this->port_usages($vmid));
         $this->assign('ips_info',$ips_info);
         $this->assign('ports_info',$ports_info);
         $this->assign('vm_info',$vm_info);
@@ -107,7 +130,7 @@ class PortController extends BaseController{
     public function Action_submitPort()
     {
         //TODO:验证VM身份(Solved)
-        //TODO:限制申请数量
+        //TODO:限制申请数量(Solved)
         ApiResponseHeader();
         $port_id = I('post.port_id');
         $connect_port = I('post.connect_port');
@@ -116,7 +139,8 @@ class PortController extends BaseController{
         $Vms = new VmsModel();
         $port_info = $Ports->where(array("id"=>$port_id,"apply_status"=>"UNUSED","status"=>"NORMAL"))->select()[0];
         $vm_info = $Vms->where(array("id"=>$vm_id,"uid"=>getUID()))->select()[0];
-        if (empty($port_info) or empty($vm_info) or !is_integer(intval($connect_port)))
+        $port_usage = $this->port_usages($vm_id);
+        if (empty($port_info) or empty($vm_info) or !is_integer(intval($connect_port)) or $port_usage['allocated']<=$port_usage['used'])
         {
             echo json_encode(array(
                 "error" => true,
