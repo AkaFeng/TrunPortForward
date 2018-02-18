@@ -30,7 +30,8 @@
                         <li <if condition="$SideBar_Selected eq 'overview' ">class="active"</if>>
                         <a disabled="">
                             <i class="glyphicon glyphicon-home"></i>
-                            <span>概览(On the dev)</span>
+                            <b class="badge bg-dark pull-right">开发中</b>
+                            <span>概览</span>
                         </a>
                         </li>
                         <!--虚拟机功能侧栏-->
@@ -45,8 +46,9 @@
                         </a>
                         </li>
                         <li <if condition="$SideBar_Selected eq 'VM_vmAdd' ">class="active"</if>>
-                        <a href="/vm/add">
+                        <a disabled="">
                             <i class="fa fa-plus"></i>
+                            <b class="badge bg-dark pull-right">开发中</b>
                             <span>添加虚拟机</span>
                         </a>
                         </li>
@@ -109,10 +111,11 @@
                             <span>{$Think.lang.SideBar_Profile}</span>
                         </a>
                     </li>-->
+
                         <li <if condition="$SideBar_Selected eq 'account_verification' ">class="active"</if>>
-                            <a href="/account/whmcsConnect">
+                            <a disabled="">
                                 <i class="icon icon-user-following text-danger-lter"></i>
-                                <b class="badge bg-danger pull-right">待完成</b>
+                                <b class="badge bg-dark pull-right">开发中</b>
                                 <span>我的账户</span>
                             </a>
                         </li>

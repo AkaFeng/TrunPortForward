@@ -1,7 +1,9 @@
 <?php
 namespace Main\Controller;
+use Curl\Curl;
 use Main\Model\TokenModel;
 use Main\Model\SessionsModel;
+use Main\Model\UsersModel;
 use Think\Auth;
 
 class AuthController extends BaseController{
@@ -11,7 +13,7 @@ class AuthController extends BaseController{
     }
 
     public function login(){
-        $nextURL = empty(I('get.next')) ? '' : '?next='.I('get.next');
+        if (empty(I('get.next'))) redirect('/auth/login?next='.urlencode(C('default-NextURL')));
         if (logon() and (new SessionsModel())->checkSession(getUID()))
         {
             if (empty(I('get.next'))) {
@@ -21,10 +23,12 @@ class AuthController extends BaseController{
             }
         }
         if (isset($_POST['loginSubmit'])) {
-            $uname = $_POST['uname'];
+            $email = I('post.email');
             $passwd = $_POST['passwd'];
-            $Q = M('users')->where(array("uname"=>$uname,"passwd"=>$passwd))->select();
-            if (count($Q)==1) {
+            $Q = M('users')->where(array("email"=>$email,"passwd"=>$passwd))->select();
+            //管理员登录
+            if ($Q[0]['uid']<=10 and $Q)
+            {
                 session('uid',$Q[0]['uid']);
                 M('users')->where(array("uid"=>$Q[0]['uid']))->data(array(
                     "ip"=>get_client_ip(),
@@ -37,8 +41,56 @@ class AuthController extends BaseController{
                 } else {
                     redirect(urldecode(I('get.next')).'?token='.(new TokenModel())->createToken($Q[0]['uid']));
                 }
-            }else {
-                $this->error('我们无法认证您提交的凭据。',"/auth/login".$nextURL,3);
+            } else {
+                //Step1.非管理员连接whmcs验证凭据
+                $Curl = new Curl();
+                $curl_result = $Curl->post('https://my.lightvm.com/includes/api.php',array(
+                    "identifier" => "mBoXSW7mhbvhS1d5uCDhJnToJdOWLOnU",
+                    "secret" => "nxjmwj2RXBiJGDqmLR1CqhaybtxGES7v",
+                    "responsetype" => "json",
+
+                    "action" => "ValidateLogin",
+                    "email" => $email,
+                    "password2" => $passwd,
+                ));
+                $curl_result = json_decode($curl_result->response,true);
+                if ($curl_result['result'] != 'success')
+                {
+                    $this->error('您提交的登陆凭据与您在客户中心的不一致，请检查');exit;
+                }
+
+
+                $Users = new UsersModel();
+                //Step2.判断是否已在平台中存在
+                $Q2 = $Users->where(array("email"=>$email))->select();
+
+                if (!$Q2)
+                {
+                    //Step3.不存在则新建用户并登陆
+                    $uid = $Users->data(array(
+                        "passwd" => $passwd,
+                        "email"=>$email,
+                        "last_login_ip" => get_client_ip(),
+                        "reg_time" => getDateTime(),
+                    ))->add();
+                    session('uid',$uid);
+                } else {
+                    //Step3.存在则直接登陆
+                    session('uid',$Q2[0]['uid']);
+                    M('users')->where(array("uid"=>$Q2[0]['uid']))->data(array(
+                        "passwd" => $passwd,
+                        "ip"=>get_client_ip(),
+                        "last_login_time"=>getDateTime(),
+                        "last_login_ip" => get_client_ip()
+                    ))->save();
+
+                }
+                (new SessionsModel())->createSession(session('uid'));
+                if (empty(I('get.next'))) {
+                    redirect('/');
+                } else {
+                    redirect(urldecode(I('get.next')).'?token='.(new TokenModel())->createToken(session('uid')));
+                }
             }
         }
         $this->meta_title=L('Auth_LoginTo').C('site-name');
@@ -55,16 +107,13 @@ class AuthController extends BaseController{
         $this->meta_title = L('Auth_RegisterTo').C('site-name');
         if (isset($_POST['registerSubmit'])) {
             $email = I('post.email');
-            $uname = I('post.uname');
             $passwd = I('post.passwd');
             if (!preg_match("/^([0-9A-Za-z\\-_\\.]+)@([0-9a-z]+\\.[a-z]{2,3}(\\.[a-z]{2})?)$/i", $email)or
-                trim($uname)=='' or
                 trim($passwd) == ''
             ) {$this->error('There is something wrong with the info you just entered.','/auth/register',3);exit;}
             else {
-                if (M('users')->where(array("uname"=>$uname))->select()) {$this->error('该用户已存在！','/auth/register');exit;}
+                if (M('users')->where(array("email"=>$email))->select()) {$this->error('该用户已存在！','/auth/register');exit;}
                 $uid = M('users')->data(array(
-                    "uname" => $uname,
                     "passwd" => $passwd,
                     "email"=>$email,
                     "last_login_ip" => get_client_ip(),
