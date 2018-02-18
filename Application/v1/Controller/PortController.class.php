@@ -7,6 +7,7 @@
  */
 namespace v1\Controller;
 use function Couchbase\defaultDecoder;
+use v1\Model\HostsModel;
 use v1\Model\IpsModel;
 use v1\Model\PortsModel;
 use v1\Model\VmsModel;
@@ -104,13 +105,20 @@ class PortController extends BaseController{
         $port_id = I('post.port_id');
         $port_info = $Ports->where(array("id"=>$port_id))->select()[0];
         $Vms = new VmsModel();
-        if ($Vms->where(array("id"=>$port_info['vm_id']))->select()[0]['uid'] != getUID() or $port_info['apply_status'] == 'RELEASED')
+        $vm_info = $Vms->where(array("id"=>$port_info['vm_id']))->select()[0];
+        if ($vm_info['uid'] != getUID() or $port_info['apply_status'] == 'RELEASED')
         {
             echo json_encode(array(
                 "error" => true,
                 "msg" => "Access Denied"
             ));exit;
         } else {
+            $Hosts = new HostsModel();
+            $port_info = $Ports->where(array("id"=>$port_id))->select()[0];
+            $vm_info = (new VmsModel())->where(array("id"=>$port_info['vm_id']))->select()[0];
+            $host_info = $Hosts->where(array("id"=>$vm_info['host_id']))->select()[0];
+            $Hosts->closePortForward($host_info['id'],$port_id);
+
             $Ports->where(array("id"=>$port_id))->data(array("apply_status"=>"RELEASED","released_at"=>getDateTime()))->save();
             $Ports->data(array(
                 "range_id" => $port_info['range_id'],

@@ -12,13 +12,6 @@ class IndexController extends BaseController {
         }
     }
 
-    public function t0()
-    {
-        $Solus = new \Solus('http://168.235.75.234/api/admin','YKkKWwSgPla2YeBuViYcxAnhYcC8ycImNTXygGFV','RGNFKf1voOyMfMU4Om1cpyp3hdqnJV0prNV2TLn8');
-        $res = $Solus->listServers(5);
-        var_dump($res);
-    }
-
     public function t1()
     {
         $Curl = new Curl();
@@ -26,11 +19,10 @@ class IndexController extends BaseController {
             "identifier" => "mBoXSW7mhbvhS1d5uCDhJnToJdOWLOnU",
             "secret" => "nxjmwj2RXBiJGDqmLR1CqhaybtxGES7v",
             "responsetype" => "json",
-            "action" => "ValidateLogin",
-            "email" => "cytvictor@yeah.net",
-            "password2" => "cytvictor",
+            "action" => "GetClientsProducts",
+            "clientid" => 980,
         ));
-        var_dump(json_decode($res->response,true));
+        var_dump(json_decode($res->response,true)['products']['product']);
 
     }
 }

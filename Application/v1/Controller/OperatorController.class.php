@@ -7,9 +7,11 @@
  */
 namespace v1\Controller;
 
+use v1\Model\HostsModel;
 use v1\Model\IpsModel;
 use v1\Model\PortRangesModel;
 use v1\Model\PortsModel;
+use v1\Model\VmsModel;
 
 class OperatorController extends BaseController
 {
@@ -101,11 +103,21 @@ class OperatorController extends BaseController
         $port_id = I('post.port_id');
         $type = I('post.type');
         $Ports = new PortsModel();
+        $Hosts = new HostsModel();
+
+        //TODO:批量审核时 多个服务器执行命令 当前只以下面这行的id为准
+        $port_info = $Ports->where(array("id"=>$port_id))->select()[0];
+        $vm_info = (new VmsModel())->where(array("id"=>$port_info['vm_id']))->select()[0];
+        $host_info = $Hosts->where(array("id"=>$vm_info['host_id']))->select()[0];
+        $ip_info = (new IpsModel())->where(array("id"=>$port_info['ip_id']))->select()[0];
         switch ($type)
         {
             case 'SINGLE':
-                if ($Ports->where(array("id"=>$port_id,"apply_status"=>"APPLIED","status"=>"NORMAL"))->select())
+                $port_info = $Ports->where(array("id"=>$port_id,"apply_status"=>"APPLIED","status"=>"NORMAL"))->select()[0];
+                if ($port_info)
                 {
+                    $EXEC_RES = $Hosts->openPortForwardTCP($host_info['id'],$ip_info['ip_address'],$port_info['port'],$port_info['connect_port'],$vm_info['svm_internal_ip'],$port_id);
+var_dump($EXEC_RES);exit;
                     $Ports->where(array("id"=>$port_id))->data(array("apply_status"=>"USED","used_at"=>getDateTime(),"operator_uid"=>getUID()))->save();
                     echo json_encode(array(
                         "success" => true,
@@ -119,10 +131,9 @@ class OperatorController extends BaseController
                 }
                 break;
             case 'ALL':
-                $Ports->where(array("apply_status"=>"APPLIED","status"=>"NORMAL"))->data(array("apply_status"=>"USED","used_at"=>getDateTime(),"operator_uid"=>getUID()))->save();
                 echo json_encode(array(
-                    "success" => true,
-                    "msg" => "审核成功"
+                    "error" => true,
+                    "msg" => "未实现"
                 ));
                 break;
         }

@@ -5,6 +5,8 @@ use Main\Model\TokenModel;
 use Main\Model\SessionsModel;
 use Main\Model\UsersModel;
 use Think\Auth;
+use v1\Model\HostsModel;
+use v1\Model\VmsModel;
 
 class AuthController extends BaseController{
     public function _initialize()
@@ -70,6 +72,17 @@ class AuthController extends BaseController{
                     "clientid" => $curl_result['userid']
                 )))->response,true);
                 $Users = new UsersModel();
+
+                //获取WHMCS产品信息
+                $client_products = json_decode(($Curl->post('https://my.lightvm.com/includes/api.php',array(
+                    "identifier" => "mBoXSW7mhbvhS1d5uCDhJnToJdOWLOnU",
+                    "secret" => "nxjmwj2RXBiJGDqmLR1CqhaybtxGES7v",
+                    "responsetype" => "json",
+                    "action" => "GetClientsProducts",
+                    "clientid" => $curl_result['userid'],
+                )))->response,true)['products']['product'];
+
+
                 //Step2.判断是否已在平台中存在
                 $Q2 = $Users->where(array("email"=>$email))->select();
 
@@ -98,6 +111,29 @@ class AuthController extends BaseController{
                     ))->save();
 
                 }
+                $Vms = new VmsModel();
+                for ($i=0;$i<count($client_products);$i++)
+                {
+                    $this_product_info = $client_products[$i];
+                    if ($this_product_info['status'] == 'active')
+                    {
+                        $svm_vm_id = getCustomFieldValue($this_product_info,'vserverid');
+                        $svm_vm_internal_ip  = getCustomFieldValue($this_product_info,'internalip');
+                        $svm_vm_node_id =  getCustomFieldValue($this_product_info,'nodeid');
+                        if (!$Vms->where(array("uid"=>session('uid'),"svm_vm_id"=>$svm_vm_id))->select())
+                        {
+                            $Vms->data(array(
+                                "svm_server_id" => 1,
+                                "host_id" => (new HostsModel())->where(array("svm_nodeid"=>$svm_vm_node_id))->select()[0]['id'],
+                                "uid" => getUID(),
+                                "svm_vm_id" => $svm_vm_id,
+                                "svm_internal_ip" => $svm_vm_internal_ip,
+                                "create_at" => getDateTime(),
+                            ))->add();
+                        }
+                    }
+                }
+
                 (new SessionsModel())->createSession(session('uid'));
                 if (empty(I('get.next'))) {
                     redirect('/');
