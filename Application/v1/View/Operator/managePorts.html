@@ -131,6 +131,11 @@
                         }, 1000);
                         return false;
                     } else if (json.error==1) {
+                        swal({
+                            title: "{$Think.lang.Global_Error}",
+                            text: json.msg,
+                            type: "error"
+                        });
                         return false;
                     }
                 },
@@ -173,6 +178,11 @@
                             }, 1000);
                             return false;
                         } else if (json.error==1) {
+                            swal({
+                                title: "{$Think.lang.Global_Error}",
+                                text: json.msg,
+                                type: "error"
+                            });
                             return false;
                         }
                     },

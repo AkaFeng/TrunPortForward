@@ -47,7 +47,7 @@
                                         <td class="text-center">{$ports_info.used_at}</td>
                                         <td class="text-center">{$ports_info.apply_status|getPortApplyStatusFromStatus}</td>
                                         <td class="text-center">
-                                            <button class="btn btn-danger btn-xs" onclick="releasePort({$ports_info.id});"><i class="fa fa-times"></i> 释放</button>
+                                            <if condition="$ports_info.apply_status eq 'RELEASED'"><button class="btn btn-default btn-xs" disabled><i class="fa fa-ban"></i> 不可用</button><else /><button class="btn btn-danger btn-xs" onclick="releasePort({$ports_info.id});"><i class="fa fa-times"></i> 释放</button></if>
                                         </td>
                                     </tr>
                                 </volist>

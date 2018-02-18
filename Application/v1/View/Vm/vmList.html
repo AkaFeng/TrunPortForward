@@ -53,7 +53,8 @@
                                         <td class="text-center">{$vms_info.memory|formatSize}</td>
                                         <td class="text-center"><span class="label label-{$vms_info.state|getVmStatusLabel}"> {$vms_info.state|getVmStatusFromStatus}</span></td>
                                         <td class="text-center">
-                                            <button class="btn btn-primary btn-xs" onclick="getExamInfo({$exams_available.id});"><i class="fa fa-cogs"></i> 管理</button>
+                                            <button class="btn btn-primary btn-xs" onclick="alert('暂未实现')"><i class="fa fa-cogs"></i> 管理</button>
+                                            <a href="/port/apply?vm={$vms_info.id}"><button class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> 申请新端口</button></a>
                                         </td>
                                     </tr>
                                 </volist>
