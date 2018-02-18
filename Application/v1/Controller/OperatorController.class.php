@@ -117,7 +117,6 @@ class OperatorController extends BaseController
                 if ($port_info)
                 {
                     $EXEC_RES = $Hosts->openPortForwardTCP($host_info['id'],$ip_info['ip_address'],$port_info['port'],$port_info['connect_port'],$vm_info['svm_internal_ip'],$port_id);
-var_dump($EXEC_RES);exit;
                     $Ports->where(array("id"=>$port_id))->data(array("apply_status"=>"USED","used_at"=>getDateTime(),"operator_uid"=>getUID()))->save();
                     echo json_encode(array(
                         "success" => true,

@@ -2786,6 +2786,7 @@ class SSH2
         if ($callback === false || $this->in_request_pty_exec) {
             return true;
         }
+        return true;
 
         $output = '';
         while (true) {

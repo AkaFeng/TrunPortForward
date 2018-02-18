@@ -45,7 +45,7 @@ rinetd -c /home/rinetd/conf/' . $port_id . '.conf
         if (!$SSH->login('root', $host_info['ssh_password'])) {
             exit('Login Failed');
         }
-        $cmd = 'ps -ef | grep "rinetd -c '.$port_id.'.conf" | grep -v grep | cut -c 9-15 | xargs kill -s 9';
+        $cmd = 'ps -ef | grep "rinetd -c /home/rinetd/conf/'.$port_id.'.conf" | grep -v grep | cut -c 9-15 | xargs kill -s 9';
         $result = $SSH->exec($cmd);
         return true;
     }
