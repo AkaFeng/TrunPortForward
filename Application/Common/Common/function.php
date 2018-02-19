@@ -178,3 +178,30 @@ function LOGGER($content,$type)
         "log_ip" => get_client_ip(),
     ))->add();
 };
+
+
+function getCustomFieldValue($single_product_arr,$custom_field_name)
+{
+    $custom_fields = $single_product_arr['customfields']['customfield'];
+    for ($i=0;$i<count($custom_fields);$i++)
+    {
+        if ($custom_fields[$i]['name'] == $custom_field_name)
+        {
+            return $custom_fields[$i]['value'];
+        }
+    }
+    return false;
+}
+
+function checkCustomFieldExists($single_product_arr,$custom_field_name)
+{
+    $custom_fields = $single_product_arr['customfields']['customfield'];
+    for ($i=0;$i<count($custom_fields);$i++)
+    {
+        if ($custom_fields[$i]['name'] == $custom_field_name)
+        {
+            return true;
+        }
+    }
+    return false;
+}

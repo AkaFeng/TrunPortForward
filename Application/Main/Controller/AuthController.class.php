@@ -115,10 +115,9 @@ class AuthController extends BaseController{
 
                 }
                 $Vms = new VmsModel('vms','portmg_');
-                for ($i=0;$i<count($client_products);$i++)
+                foreach ($client_products as $key => $this_product_info)
                 {
-                    $this_product_info = $client_products[$i];
-                    if ($this_product_info['status'] == 'active')
+                    if (/*$this_product_info['status'] == 'active' and()*/  checkCustomFieldExists($this_product_info,'ims_type'))
                     {
                         $svm_vm_id = getCustomFieldValue($this_product_info,'vserverid');
                         $svm_vm_internal_ip  = getCustomFieldValue($this_product_info,'internalip');
@@ -127,7 +126,7 @@ class AuthController extends BaseController{
                         {
                             $vm_id = $Vms->data(array(
                                 "svm_server_id" => 1,
-                                "host_id" => (new HostsModel())->where(array("svm_nodeid"=>$svm_vm_node_id))->select()[0]['id'],
+                                "host_id" => (new HostsModel('hosts','portmg_'))->where(array("svm_nodeid"=>$svm_vm_node_id))->select()[0]['id'],
                                 "uid" => getUID(),
                                 "svm_vm_id" => $svm_vm_id,
                                 "svm_internal_ip" => $svm_vm_internal_ip,
@@ -136,6 +135,7 @@ class AuthController extends BaseController{
                             LOGGER('vmid:'.$vm_id.' Imported',"VM_IMPORT");
                         }
                     }
+
                 }
 
                 (new SessionsModel())->createSession(session('uid'));
