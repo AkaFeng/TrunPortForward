@@ -73,7 +73,7 @@ class PortController extends BaseController{
         $ips_info = $Ips->where(array("host_id"=>$vm_info['host_id']))->select();
         for ($i=0;$i<count($ips_info);$i++)
         {
-            $first_ports_info = $Ports->where(array("ip_id"=>$ips_info[$i]['id'],"apply_status"=>"UNUSED"))->order('port asc')->select();
+            $first_ports_info = $Ports->where(array("ip_id"=>$ips_info[$i]['id'],"apply_status"=>"UNUSED","status"=>"NORMAL"))->order('port asc')->select();
 
             /*$J = 0;
             $bigJ = 0;
