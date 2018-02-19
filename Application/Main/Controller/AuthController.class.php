@@ -114,7 +114,7 @@ class AuthController extends BaseController{
                     ))->save();
 
                 }
-                $Vms = new VmsModel();
+                $Vms = new VmsModel('vms','portmg_');
                 for ($i=0;$i<count($client_products);$i++)
                 {
                     $this_product_info = $client_products[$i];
