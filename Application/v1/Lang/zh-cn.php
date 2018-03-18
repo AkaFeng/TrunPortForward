@@ -40,9 +40,9 @@ return array(
 
     //认证语言
     'Auth_Login' => '登录',
-    'Auth_LoginTo' => '登录到',
+    'Auth_LoginTo' => '登录到 ',
     'Auth_Register' => '注册',
-    'Auth_RegisterTo' => '注册到',
+    'Auth_RegisterTo' => '注册到 ',
 
     //网关语言
     'Gateway_ApiInfo' => '接口信息',
