@@ -40,9 +40,9 @@ return array(
 
     //Authorization
     'Auth_Login' => 'Login',
-    'Auth_LoginTo' => 'Login to',
+    'Auth_LoginTo' => 'Login to ',
     'Auth_Register' => 'Sign up',
-    'Auth_RegisterTo' => 'Sign up to',
+    'Auth_RegisterTo' => 'Sign up to ',
     
     //Gateway
     'Gateway_ApiInfo' => 'Gateway Info',
